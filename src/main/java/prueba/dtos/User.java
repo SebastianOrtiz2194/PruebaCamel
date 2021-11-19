@@ -3,7 +3,7 @@ package prueba.dtos;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Generated;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "name",
     "age"
 })
-@Generated("jsonschema2pojo")
+
 public class User {
 
     @JsonProperty("id")

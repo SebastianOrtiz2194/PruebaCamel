@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 import prueba.dtos.User;
 
 /**
- * A simple Camel route that triggers from a timer and calls a bean and prints to system out.
+ * A simple Camel route that triggers from a timer and calls a bean and prints
+ * to system out.
  * <p/>
  * Use <tt>@Component</tt> to make Camel auto detect this route when starting.
  */
@@ -17,7 +18,7 @@ import prueba.dtos.User;
 public class MySpringBootRouter extends RouteBuilder {
 	private JacksonDataFormat jsonUser = new JacksonDataFormat(User.class);
 
-    @Override
+	@Override
     public void configure() {
     	
     	restConfiguration()
@@ -46,8 +47,14 @@ public class MySpringBootRouter extends RouteBuilder {
     
     	rest("users")
 			.post("/guardar").type(User.class)
-			.route().setHeader("id",simple("${body.id}")).setHeader("name",simple("${body.name}")).setHeader("age",simple("${body.age}"))
-			.to("sql:insert into user (id, name, age) values (:#id, :#name, :#age)?dataSource=#dataSource");
+			.consumes(MediaType.APPLICATION_JSON_VALUE.toString())
+			.produces(MediaType.APPLICATION_JSON_VALUE.toString())
+			.route()
+			.setHeader("id",simple("${body.id}")).setHeader("name",simple("${body.name}")).setHeader("age",simple("${body.age}"))
+			.to("sql:insert into user (id, name, age) values (:#id, :#name, :#age)?dataSource=#dataSource")
+			.setHeader("CamelFileName", simple("${body.name}.txt"))
+			.marshal(jsonUser)
+	        .to("file://files");
     	
     	rest("users")
 			.delete("/{id}").type(User.class)
