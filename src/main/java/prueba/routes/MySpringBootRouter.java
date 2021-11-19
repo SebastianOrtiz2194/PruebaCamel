@@ -35,14 +35,16 @@ public class MySpringBootRouter extends RouteBuilder {
     		.consumes(MediaType.APPLICATION_JSON_VALUE.toString())
     		.produces(MediaType.APPLICATION_JSON_VALUE.toString())
     		.route()
-    		.to("sql:select * from user?dataSource=#dataSource");
+    		.to("sql:select * from user?dataSource=#dataSource")
+    		.log("${body}");
     	
     	rest("users")
 			.get("/{id}").outType(User.class)
 			.consumes(MediaType.APPLICATION_JSON_VALUE.toString())
 			.produces(MediaType.APPLICATION_JSON_VALUE.toString())
 			.route()
-			.to("sql:select * from user where id=:#id?dataSource=#dataSource");
+			.to("sql:select * from user where id=:#id?dataSource=#dataSource")
+    		.log("${body}");
     	
     
     	rest("users")
@@ -52,16 +54,26 @@ public class MySpringBootRouter extends RouteBuilder {
 			.route()
 			.setHeader("id",simple("${body.id}")).setHeader("name",simple("${body.name}")).setHeader("age",simple("${body.age}"))
 			.to("sql:insert into user (id, name, age) values (:#id, :#name, :#age)?dataSource=#dataSource")
+			.log("${body}")
 			.setHeader("CamelFileName", simple("${body.name}.txt"))
+			.log("${body}")
 			.marshal(jsonUser)
-	        .to("file://files");
+			.log("${body}")
+    		.log("${headers}")
+	        .to("file:/files")
+    		.log("${headers}")
+    		.log("${header.CamelFileName}")
+    		.unmarshal(jsonUser)
+    		.log("${body}");
+    	
     	
     	rest("users")
 			.delete("/{id}").type(User.class)
 			.consumes(MediaType.APPLICATION_JSON_VALUE.toString())
 			.produces(MediaType.APPLICATION_JSON_VALUE.toString())
 			.route()
-			.to("sql:delete from user where id=:#id?dataSource=#dataSource");
+			.to("sql:delete from user where id=:#id?dataSource=#dataSource")
+			.log("${body}");
     	
     	rest("users")
 			.put("/{id}").type(User.class)
@@ -69,7 +81,8 @@ public class MySpringBootRouter extends RouteBuilder {
 			.produces(MediaType.APPLICATION_JSON_VALUE.toString())
 			.route().setHeader("name",simple("${body.name}")).setHeader("age",simple("${body.age}"))
 			.log("${header.name}, ${header.age}")
-			.to("sql:update user set name=:#name, age=:#age where id=:#id?dataSource=#dataSource");
+			.to("sql:update user set name=:#name, age=:#age where id=:#id?dataSource=#dataSource")
+			.log("${body}");
     	
     	rest("users")
 			.patch("/{id}").type(User.class)
