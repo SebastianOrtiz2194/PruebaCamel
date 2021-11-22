@@ -39,13 +39,20 @@ public class MySpringBootRouter extends RouteBuilder {
     		.log("${body}");
     	
     	rest("users")
+	    	.get("/saludo")
+	    	.route()
+	    	.transform().method("myBean", "saySomething")
+			.log("${body}");
+    		
+    	
+    	rest("users")
 			.get("/{id}").outType(User.class)
 			.consumes(MediaType.APPLICATION_JSON_VALUE.toString())
 			.produces(MediaType.APPLICATION_JSON_VALUE.toString())
 			.route()
 			.to("sql:select * from user where id=:#id?dataSource=#dataSource")
     		.log("${body}");
-    	
+    		
     
     	rest("users")
 			.post("/guardar").type(User.class)
@@ -63,6 +70,7 @@ public class MySpringBootRouter extends RouteBuilder {
 	        .to("file:/files")
     		.log("${headers}")
     		.log("${header.CamelFileName}")
+    		.log("${exchange.getIn().getHeaders()}")
     		.unmarshal(jsonUser)
     		.log("${body}");
     	
