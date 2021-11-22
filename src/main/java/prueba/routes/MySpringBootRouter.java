@@ -3,6 +3,7 @@ package prueba.routes;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.model.rest.RestBindingMode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,9 @@ import prueba.dtos.User;
 @Component
 public class MySpringBootRouter extends RouteBuilder {
 	private JacksonDataFormat jsonUser = new JacksonDataFormat(User.class);
+	
+    @Value("${prueba.saludo}")
+    private String saludo;
 
 	@Override
     public void configure() {
@@ -42,7 +46,9 @@ public class MySpringBootRouter extends RouteBuilder {
 	    	.get("/saludo")
 	    	.route()
 	    	.transform().method("myBean", "saySomething")
-			.log("${body}");
+			.log("${body}")
+			.log(saludo);
+    	
     		
     	
     	rest("users")
